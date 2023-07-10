@@ -1,0 +1,36 @@
+Built in functions:
+
+reduce() turns an array to a single value. Example:
+
+const numberOfCartItems = cartCtx.items.reduce((curNumber, item)=>{
+    return curNumber+item.amount;
+  },0);
+
+  the 0 is the initial value.
+  the curNumber is the carry over value on each repeat. 
+  the item is each array value.
+  
+
+concat() is like push() but instead of expanding the current array it creats a new expanded array
+
+bind() we use it to make sure that the refered function gets the right parameters example:
+cartCtx.items.map((item) => (
+          <CartItem
+            key={item.id}
+            name={item.name}
+            price={item.price}
+            amount={item.amount}
+            onRemove={removeCartItemHandler.bind(null, item.id)}
+            onAdd={addCartItemHandler.bind(null, item)}
+          />
+        )
+
+findIndex() It does what it says but it take a function as input that should return true for the
+indeces we are looking for example:
+const existingCartItem = state.items.findIndex(
+      (item) => action.item.id === item.id
+    );
+Here we find the index where the ids are the same.
+
+filter() returns a new array. It take a function as an input. It run the function for each item and keeps 
+the "true" cases in the new array and discards the "false". Useful to remove things from arrays

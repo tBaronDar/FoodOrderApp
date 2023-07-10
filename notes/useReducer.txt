@@ -1,0 +1,53 @@
+The useReducer hook is used in order manage more complex cases of state.
+In the food app we use it in the CartContext comp, because it is the comp responsible for the app-wide 
+state managment.
+
+We create a helper const outside of the CartContext function because we dont want it to re-evaluate
+each time. Also outside the "main" comp we add a default state object. Example
+
+const defaultCartState = {
+  items:[],
+  amount: 0,
+}
+
+const cartReducer=  (state, action)=>{
+  return defaultCartState;
+}
+
+The "state" is the previous instance of state. The "action" is defined by us and on return we return
+the new instance of state, the default in the case above.
+
+Then is our "main" comp we call the useReducer:
+
+const CartProvider = (props) => {
+  const [cartState, cartStateDispatch]=useReducer(cartReducer, defaultCartState);
+
+  cartReducer = the fcn the changes the state.
+  defaultCartState = the default state.
+  cartState = the state that we get.
+  cartStateDispatch = the "action" that selects the logic in the cartReducer().
+
+  According to Convention the action are objects, example:
+
+  const addItemHandler = (item) => {
+    cartStateDispatch({ type: "ADD_ITEM", item: item });
+  };
+
+  const removeItemHandler = (id) => {
+    cartStateDispatch({ type: "REMOVE_ITEM", id: id });
+  };
+
+The id and item keys are used so we can transfer the "handler" data. So the reducer function becomes
+like this: 
+
+const cartReducer = (state, action) => {
+  if (action.type === "ADD_ITEM") {
+    const updatedItems = state.items.concat(action.item);
+    const updatedTotalAmount =
+      state.totalAmount + action.item.price * action.item.amount;
+    return {
+      items: updatedItems,
+      totalAmount: updatedTotalAmount,
+    };
+    ....
+The "state" parameter of the cart reducer is guaranted by React to be the state. 

@@ -1,0 +1,21 @@
+With the useRef hook we create a link between a variable and a DOM element, in order foe example to 
+read it. In the example below forward a ref by wrapping the comp function with the React.forwardRef()
+and adding a ref parameter in fcn. Also in the input we add ref={ref}
+
+const Input = React.forwardRef((props, ref) => {
+  return (
+    <div className={classes.input}>
+      <label htmlFor={props.input.htmlFor}>{props.label}</label>
+      <input ref={ref} {...props.input} />
+    </div>
+
+The ref has always a .current object and below we access the value that it's always a string. value 
+because the ref refers to an <input> the has builtin value type etc.
+
+const MealItemForm = (props) => {
+  const amountInputRef = useRef();
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    const enteredAmount = amountInputRef.current.value;
+  };

@@ -1,0 +1,47 @@
+Context is ideal for managing appwide state. Convention: create /stored next to /components
+Step one in /stored/context.js: 
+
+import React from "react";
+
+const CartContext = React.createContext({ // this is an example object
+  items: [],
+  totalAmount: 0,
+  addItem: (item) => {},
+  removeId: (id) => {},
+});
+
+Step two in /stored/ContextProvider.js :
+
+import CartContext from "./cart-context";
+
+const CartProvider = (props) => {
+  return (
+    <CartContext.Provider>
+    {props.children}
+    </CartContext.Provider>
+    );
+};
+
+export default CartProvider;
+
+The above will be used as a wrapper to wrap comps that need to consume context.
+There we can use value={someObject} to provide all the props we need. Example:
+
+const cartContext = { //example object that can contain arrays, variables, functions etc...
+  items: [],
+  totalAmount: 0,
+  addItem: addItemHandler,
+  removeItem: removeItemHandler,
+};
+
+const CartProvider = (props) => {
+  return (
+    <CartContext.Provider value={cartContext}>
+
+Most likely it will be used to wrap comps in App.js. The cartContext could be managed in the App.js
+
+HOW TO USE IT: In the comp that we need context we import useContext and CartContext the object not
+the Provider.
+Then we use a helper variable:
+const cartCtx = useContext(CartContext);
+Then we can use, cartCtx.label, cartCtx.run() etc.

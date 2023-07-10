@@ -1,0 +1,22 @@
+Create a Modal comp, it will be mostly used as a wrapper.
+
+Create portals for modal and the backdrop. Go to /public/index.html ,find
+<body> <div id:"root"> and add:
+
+<div id:"overlays"> </div> //the overlays go above everything
+<div id:"root"> </div>
+
+In the Modal.js create the comps Backdrop and ModalOverlay and give appropriate css.
+
+In the Modal.js import ReactDOM so we can return:
+{ReactDOM.createPortal(<Backdrop />, portalElement)}
+{ReactDOM.createPortal(
+        <ModalOverlay>{props.children}</ModalOverlay>,
+        portalElement
+      )}
+
+The portalElement is the second argument in createPortal and it's the link to index.html via:
+const portalElement = document.getElementById("overlays");
+
+We can import the Modal comp and wrap the comp that we need.
+Use state to make the rendering of the Modal comp contitional. {stateValue && <theModal>}
