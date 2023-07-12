@@ -1,0 +1,20 @@
+The useEffect hook runs the callback function when the dependencies change. The dependencies are 
+in the []. It is commonly used with the setTimeout. We can use it to check inputs. Example from
+the food app exercise:
+
+useEffect(() => {
+    if (items.length === 0) {
+      return;
+    }
+    setBtnIsHighlighted(true);
+
+    const timer = setTimeout(() => {
+      setBtnIsHighlighted(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [items]);
+
+  Here Items is the dependency.
+
+  On return we put the clean out code.

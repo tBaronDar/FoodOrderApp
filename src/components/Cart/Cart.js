@@ -11,12 +11,13 @@ const Cart = (props) => {
   const hasItems = cartCtx.items.length > 0;
 
   const addCartItemHandler = (item) => {
-    cartCtx.addItem({ ...item, amount: item.amount++ }); //find the addItem fcn in the CartProvider.js
+    cartCtx.addItem({ ...item, amount: item.amount + 1 }); //find the addItem fcn in the CartProvider.js
   };
 
   const removeCartItemHandler = (id) => {
     cartCtx.removeId(id);
   };
+
   return (
     <Modal onClose={props.onClose}>
       <ul className={classes["cart-items"]}>
