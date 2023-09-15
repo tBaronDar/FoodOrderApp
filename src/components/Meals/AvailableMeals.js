@@ -31,54 +31,58 @@ import MealItem from "./MealItem/MealItem";
 // ];
 
 function AvailableMeals() {
-  const [incomingData, setIncomingData] = useState();
+  const [incomingData, setIncomingData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
 
   useEffect(() => {
     async function getMeals() {
-      // try {
       const response = await fetch(
         "https://mealsapp-e50cf-default-rtdb.europe-west1.firebasedatabase.app/meals.json/"
       );
-      if (response.ok) {
-        const data = await response.json();
-
-        let incomingArray;
-        for (const key in data) {
-          incomingArray = data[key];
-        }
-
-        const mealsArray = incomingArray.map((each) => (
-          <MealItem
-            id={each.id}
-            key={each.id}
-            name={each.name}
-            description={each.description}
-            price={each.price}
-          />
-        ));
-
-        setIncomingData(mealsArray);
+      if (!response.ok) {
+        throw new Error("Loading has failed.");
       }
+      const data = await response.json();
+
+      let incomingArray;
+      for (const key in data) {
+        incomingArray = data[key];
+      }
+
+      setIncomingData(incomingArray);
+      setIsLoading(false);
     }
-    getMeals();
+
+    //getMeals retuns a promise. don't use try{}catch{}
+    getMeals().catch((error) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    });
   }, []);
 
-  console.log(incomingData);
+  if (isLoading) {
+    return <section className={classes.isLoading}>Loading...</section>;
+  }
 
-  // const mealsArray = DUMMY_MEALS.map((each) => (
-  //   <MealItem
-  //     id={each.id}
-  //     key={each.id}
-  //     name={each.name}
-  //     description={each.description}
-  //     price={each.price}
-  //   />
-  // ));
+  if (httpError) {
+    return <section className={classes.mealsError}>{httpError}</section>;
+  }
+
+  const mealsArray = incomingData.map((each) => (
+    <MealItem
+      id={each.id}
+      key={each.id}
+      name={each.name}
+      description={each.description}
+      price={each.price}
+    />
+  ));
 
   return (
     <section className={classes.meals}>
       <Card>
-        <ul>{incomingData}</ul>
+        <ul>{mealsArray}</ul>
       </Card>
     </section>
   );

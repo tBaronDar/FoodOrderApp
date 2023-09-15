@@ -2,36 +2,11 @@ import classes from "./Cart.module.css";
 import Modal from "../UI/Modal/Modal";
 import CartContext from "../../stored/cart-context";
 import CartItem from "./CartItem";
-import React, { useContext } from "react";
-
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
+import React, { useContext, useState } from "react";
+import OrderForm from "./OrderForm";
 
 const Cart = (props) => {
+  const [showOrderForm, setShowOrderForm] = useState(false);
   const cartCtx = useContext(CartContext);
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
@@ -45,13 +20,20 @@ const Cart = (props) => {
     cartCtx.removeId(id);
   };
 
-  function orderClickHandler() {
+  const orderClickHandler = () => {
+    setShowOrderForm(true);
+  };
+
+  const submitOrderHandler = (userData) => {
     fetch(
       "https://mealsapp-e50cf-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cartCtx.items),
+        body: JSON.stringify({
+          user: userData,
+          orderedItems: cartCtx.items,
+        }),
       }
     )
       .then((resp) => {
@@ -61,7 +43,21 @@ const Cart = (props) => {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
+
+  const modalActions = (
+    <div className={classes.actions}>
+      <button className={classes["button--alt"]} onClick={props.onClose}>
+        Close
+      </button>
+
+      {hasItems && (
+        <button className={classes.button} onClick={orderClickHandler}>
+          Check Out
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <Modal onClose={props.onClose}>
@@ -81,16 +77,10 @@ const Cart = (props) => {
         <span>Total amount</span>
         <span>{totalAmount}</span>
       </div>
-      <div className={classes.actions}>
-        <button className={classes["button--alt"]} onClick={props.onClose}>
-          Close
-        </button>
-        {hasItems && (
-          <button className={classes.button} onClick={orderClickHandler}>
-            Order
-          </button>
-        )}
-      </div>
+      {showOrderForm && (
+        <OrderForm onCancel={props.onClose} onConfirm={submitOrderHandler} />
+      )}
+      {!showOrderForm && modalActions}
     </Modal>
   );
 };
