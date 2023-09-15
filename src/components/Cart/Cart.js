@@ -7,6 +7,8 @@ import OrderForm from "./OrderForm";
 
 const Cart = (props) => {
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submited, setSubmited] = useState(false);
   const cartCtx = useContext(CartContext);
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
@@ -24,25 +26,29 @@ const Cart = (props) => {
     setShowOrderForm(true);
   };
 
-  const submitOrderHandler = (userData) => {
-    fetch(
-      "https://mealsapp-e50cf-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user: userData,
-          orderedItems: cartCtx.items,
-        }),
+  const submitOrderHandler = async (userData) => {
+    try {
+      setIsSubmitting(true);
+      const response = await fetch(
+        "https://mealsapp-e50cf-default-rtdb.europe-west1.firebasedatabase.app/orders.json",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: userData,
+            orderedItems: cartCtx.items,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to upload...");
       }
-    )
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => console.log(data))
-      .catch((error) => {
-        console.log(error);
-      });
+      setIsSubmitting(false);
+      setSubmited(true);
+      cartCtx.clearCart();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const modalActions = (
@@ -59,8 +65,8 @@ const Cart = (props) => {
     </div>
   );
 
-  return (
-    <Modal onClose={props.onClose}>
+  const modalContent = (
+    <React.Fragment>
       <ul className={classes["cart-items"]}>
         {cartCtx.items.map((item) => (
           <CartItem
@@ -81,6 +87,24 @@ const Cart = (props) => {
         <OrderForm onCancel={props.onClose} onConfirm={submitOrderHandler} />
       )}
       {!showOrderForm && modalActions}
+    </React.Fragment>
+  );
+
+  const modalSubmitting = <p>Uploading your order. Please wait...</p>;
+  const modalSubmited = (
+    <React.Fragment>
+      <p>Your order has been uploaded!</p>
+      <button className={classes.button} onClick={props.onClose}>
+        Close
+      </button>
+    </React.Fragment>
+  );
+
+  return (
+    <Modal onClose={props.onClose}>
+      {!isSubmitting && !submited && modalContent}
+      {isSubmitting && modalSubmitting}
+      {!isSubmitting && submited && modalSubmited}
     </Modal>
   );
 };

@@ -79,7 +79,7 @@ const OrderForm = (props) => {
       </div>
       <div className={postalControlClasses}>
         <label htmlFor="postal">Postal Code</label>
-        <input type="text" id="postal" ref={inputPostalRef} />
+        <input type="number" id="postal" ref={inputPostalRef} />
         {!formValidity.postal && (
           <p>Please enter a valid postal code (5 digits).</p>
         )}
